@@ -3,8 +3,13 @@ import { LuGitPullRequestCreateArrow } from "react-icons/lu";
 import { FaListUl } from "react-icons/fa";
 
 import Button from "./Button";
+import { useState } from "react";
+import ModalComponent from "./ModalComponent";
+import Create from "./Create";
 
 function Header() {
+  const [create, setCreate] = useState(false);
+
   return (
     <Box
       sx={{
@@ -16,7 +21,7 @@ function Header() {
         justifyContent: "space-between",
       }}
     >
-      <Button color={"orange"}>
+      <Button color={"orange"} onClick={() => setCreate(true)}>
         <Box sx={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
           <LuGitPullRequestCreateArrow size={"20px"} />
           <Typography fontWeight={"bold"} letterSpacing={"0.5px"}>
@@ -35,6 +40,9 @@ function Header() {
           </Typography>
         </Box>
       </Button>
+      <ModalComponent open={create} handleClose={() => setCreate(false)}>
+        <Create />
+      </ModalComponent>
     </Box>
   );
 }

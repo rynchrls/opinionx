@@ -98,6 +98,29 @@ const Button = ({ children, onClick, color }) => {
           {children}
         </MuiButton>
       )}
+      {color === "green" && (
+        <MuiButton
+          onClick={onClick}
+          sx={{
+            background: "linear-gradient(135deg, #00C853, #00E676)", // Green gradient
+            color: "white",
+            fontSize: "18px",
+            fontWeight: "bold",
+            textTransform: "none",
+            borderRadius: "8px", // Rectangular shape
+            padding: "14px 28px",
+            boxShadow: "0px 8px 0px #00A152", // Darker green 3D shadow
+            transition: "all 0.3s ease-in-out",
+            "&:hover": {
+              background: "linear-gradient(135deg, #00E676, #00C853)", // Darker green on hover
+              boxShadow: "0px 0px 0px #00A152", // Removes shadow on hover
+              transform: "translateY(4px)", // Slight push-down effect
+            },
+          }}
+        >
+          {children}
+        </MuiButton>
+      )}
     </>
   );
 };

@@ -38,7 +38,7 @@ const CurrentPoll = () => {
       <Box
         sx={{
           width: "550px",
-          height: "100%",
+          height: "530px",
           backgroundColor: "rgba(0,0,0,0.5)",
           borderRadius: "8px",
           padding: "1.5rem",

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Tabs, Tab, Box } from "@mui/material";
 import CurrentPoll from "./CurrentPoll";
+import Analytics from "./Analytics";
 
 const Poll = () => {
   const [value, setValue] = useState("one");
@@ -39,6 +40,7 @@ const Poll = () => {
         <Tab value="two" label="Analytics" />
       </Tabs>
       {value === "one" && <CurrentPoll />}
+      {value === "two" && <Analytics />}
     </Box>
   );
 };
