@@ -1,7 +1,7 @@
 import { Button as MuiButton } from "@mui/material";
 import propTypes from "prop-types";
 
-const Button = ({ children, onClick, color }) => {
+const Button = ({ children, onClick, color, loading }) => {
   return (
     <>
       {color === "orange" && (
@@ -101,6 +101,9 @@ const Button = ({ children, onClick, color }) => {
       {color === "green" && (
         <MuiButton
           onClick={onClick}
+          loadingIndicator="Submitting...."
+          loading={loading && loading}
+          disabled={loading && loading}
           sx={{
             background: "linear-gradient(135deg, #00C853, #00E676)", // Green gradient
             color: "white",
@@ -134,4 +137,5 @@ Button.propTypes = {
   onClick: propTypes.func,
   color: propTypes.string,
   width: propTypes.any,
+  loading: propTypes.bool,
 };

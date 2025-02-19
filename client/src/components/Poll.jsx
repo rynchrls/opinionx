@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Tabs, Tab, Box } from "@mui/material";
 import CurrentPoll from "./CurrentPoll";
 import Analytics from "./Analytics";
 
 const Poll = () => {
   const [value, setValue] = useState("one");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -37,9 +44,9 @@ const Poll = () => {
         }}
       >
         <Tab value="one" label="Poll" />
-        <Tab value="two" label="Analytics" />
+        <Tab value="two" label="Analytics" disabled={loading} />
       </Tabs>
-      {value === "one" && <CurrentPoll />}
+      {value === "one" && <CurrentPoll loading={loading} />}
       {value === "two" && <Analytics />}
     </Box>
   );

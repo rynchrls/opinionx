@@ -1,4 +1,9 @@
-import { Box, TextField, Button as GeneralButton } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Button as GeneralButton,
+  InputAdornment,
+} from "@mui/material";
 import propTypes from "prop-types";
 import { useState } from "react";
 import styled from "styled-components";
@@ -7,7 +12,7 @@ import { IoIosAdd } from "react-icons/io";
 import SnackbarComponent from "./Snackbar";
 import { MdCancel } from "react-icons/md";
 
-const Options = styled.div`
+export const Options = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -27,8 +32,9 @@ const Create = () => {
     ],
     limit: 0,
   });
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-
+  
   let severity = "error";
 
   const generateOption = () => {
@@ -46,6 +52,10 @@ const Create = () => {
 
   const submitPoll = async () => {
     console.log(newPoll);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
   };
 
   return (
@@ -67,6 +77,7 @@ const Create = () => {
           })
         }
         placeholder={"Title of your Poll"}
+        maxCharacters={140}
       />
       <Options>
         {newPoll &&
@@ -99,6 +110,7 @@ const Create = () => {
                     return { ...prev, options: [...updated] };
                   })
                 }
+                maxCharacters={45}
                 placeholder={`Option ${idx + 1}`}
               />
               <MdCancel
@@ -137,7 +149,7 @@ const Create = () => {
           </GeneralButton>
         )}
       </Options>
-      <Button color={"green"} onClick={submitPoll}>
+      <Button color={"green"} onClick={submitPoll} loading={loading}>
         Submit
       </Button>
       <SnackbarComponent
@@ -153,14 +165,30 @@ const Create = () => {
 
 export default Create;
 
-const TextFieldComponent = ({ name, setName, placeholder }) => {
+export const TextFieldComponent = ({
+  name,
+  setName,
+  placeholder,
+  isDisabled,
+  maxCharacters,
+}) => {
+  const handleChange = (e) => {
+    if (e.target.value.length <= maxCharacters) {
+      setName(e.target.value);
+    }
+  };
+
   return (
     <TextField
       variant="outlined"
       placeholder={placeholder}
       fullWidth
+      disabled={isDisabled}
       value={name}
-      onChange={(e) => setName(e.target.value)}
+      onChange={handleChange}
+      inputProps={{
+        maxLength: maxCharacters && maxCharacters, // Set max characters
+      }}
       sx={{
         width: "100%",
         backgroundColor: "#121212", // Darker background
@@ -180,10 +208,30 @@ const TextFieldComponent = ({ name, setName, placeholder }) => {
             borderColor: "white", // Solid white on focus
             boxShadow: "0 0 10px rgba(255, 255, 255, 0.5)", // White glow effect
           },
+          "&.Mui-disabled": {
+            "& fieldset": {
+              borderColor: "rgba(255, 255, 255, 0.5)", // Lighter white border when disabled
+            },
+            "& input": {
+              color: "white !important", // White text even when disabled
+              WebkitTextFillColor: "white !important", // Ensures white color in WebKit browsers
+            },
+          },
         },
-        "&::placeholder": {
-          color: "rgba(255, 255, 255, 0.6)", // Light white placeholder
-        },
+      }}
+      InputProps={{
+        endAdornment: (
+          <>
+            {maxCharacters && (
+              <InputAdornment
+                position="end"
+                sx={{ color: "rgba(255,255,255,0.6)", fontSize: "14px" }}
+              >
+                {name.length}/{maxCharacters}
+              </InputAdornment>
+            )}
+          </>
+        ),
       }}
     />
   );
@@ -193,4 +241,6 @@ TextFieldComponent.propTypes = {
   name: propTypes.string,
   setName: propTypes.func,
   placeholder: propTypes.string,
+  isDisabled: propTypes.bool,
+  maxCharacters: propTypes.number,
 };
