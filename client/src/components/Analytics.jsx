@@ -5,16 +5,51 @@ import moment from "moment";
 import styled from "styled-components";
 import ModalComponent from "./ModalComponent";
 import Create from "./Create";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const PieContainer = styled.div`
   width: 515px;
-  height: 350px;
+  height: auto; /* Increased height to accommodate legend */
   background-color: rgba(0, 0, 0, 0.4);
   border-radius: 16px;
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 1rem;
+`;
+
+const ChartWrapper = styled.div`
+  display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
+`;
+
+const LegendContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+`;
+
+const LegendItem = styled.div`
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  color: white;
+  font-family: "Poppins, sans-serif";
+`;
+
+const LegendColor = styled.div`
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: ${(props) => props.color};
+  margin-right: 6px;
 `;
 
 const VotersListContainer = styled.div`
@@ -57,80 +92,30 @@ const ListContainer = styled.div`
   overflow: auto;
 `;
 
-const desktopOS = [
-  {
-    label: "Windows",
-    value: 72.72,
-  },
-  {
-    label: "OS X",
-    value: 16.38,
-  },
-  {
-    label: "Linux",
-    value: 3.83,
-  },
-  {
-    label: "Chrome OS",
-    value: 2.42,
-  },
-  {
-    label: "Other",
-    value: 4.65,
-  },
-];
-
 const valueFormatter = (item) => `${item.value}%`;
+
+const user = JSON.parse(localStorage.getItem("user"));
 
 const Analytics = () => {
   const pieColors = ["#FF5733", "#0066FF", "#28A745", "#FF9800", "#8E24AA"];
   const [create, setCreate] = useState(false);
+  const [pollOptions, setPollOptions] = useState([]);
+  const poll = useSelector((state) => state.opinion.poll);
+  const vote_list = useSelector((state) => state.opinion.vote_list);
 
-  const votes = [
-    {
-      name: "Ryan",
-      vote: "Windows",
-    },
-    {
-      name: "Ryan",
-      vote: "OS X",
-    },
-    {
-      name: "Ryan",
-      vote: "Linux",
-    },
-    {
-      name: "Ryan",
-      vote: "Chrome OS",
-    },
-    {
-      name: "Ryan",
-      vote: "Other",
-    },
-    {
-      name: "Ryan",
-      vote: "Windows",
-    },
-    {
-      name: "Ryan",
-      vote: "OS X",
-    },
-    {
-      name: "Ryan",
-      vote: "Linux",
-    },
-    {
-      name: "Ryan",
-      vote: "Chrome OS",
-    },
-    {
-      name: "Ryan",
-      vote: "Other",
-    },
-  ];
+  useEffect(() => {
+    setPollOptions(() => {
+      const labeledOptions = poll?.options?.map((obj) => {
+        return {
+          label: obj.title,
+          value: obj.votes,
+        };
+      });
+      return labeledOptions;
+    });
+  }, [poll]);
 
-  const whereItBelong = (vote) => {
-    const index = desktopOS.findIndex((obj) => obj.label === vote);
+  const whereItBelong = (index) => {
     return pieColors[index];
   };
 
@@ -146,38 +131,41 @@ const Analytics = () => {
         padding: "1rem 0rem 0rem 0rem",
       }}
     >
-      {desktopOS?.length > 0 && (
+      {pollOptions?.length > 0 && vote_list && (
         <>
           <PieContainer>
-            <PieChart
-              series={[
-                {
-                  data: desktopOS,
-                  highlightScope: { fade: "global", highlight: "item" },
-                  faded: {
-                    innerRadius: 30,
-                    additionalRadius: -30,
-                    color: "gray",
+            <ChartWrapper>
+              <PieChart
+                series={[
+                  {
+                    data: pollOptions,
+                    highlightScope: { fade: "global", highlight: "item" },
+                    faded: {
+                      innerRadius: 30,
+                      additionalRadius: -30,
+                      color: "gray",
+                    },
+                    valueFormatter,
                   },
-                  valueFormatter,
-                },
-              ]}
-              colors={pieColors}
-              height={300}
-              width={500}
-              slotProps={{
-                legend: {
-                  direction: "column", // Legend at the bottom
-                  position: { vertical: "top", horizontal: "right" },
-                  itemGap: 10,
-                  labelStyle: {
-                    fontSize: 14, // Change legend font size
-                    fill: "white", // Change legend text color
-                    fontFamily: "Poppins, sans-serif",
-                  },
-                },
-              }}
-            />
+                ]}
+                colors={pieColors}
+                height={250}
+                width={400}
+                slotProps={{
+                  legend: { hidden: true }, // Hides default legend
+                }}
+              />
+            </ChartWrapper>
+
+            {/* Separate Legend Below */}
+            <LegendContainer>
+              {pollOptions?.map((option, index) => (
+                <LegendItem key={index}>
+                  <LegendColor color={pieColors[index]} />
+                  <Typography> {option.label}</Typography>
+                </LegendItem>
+              ))}
+            </LegendContainer>
           </PieContainer>
           <VotersListContainer>
             <Typography
@@ -189,14 +177,17 @@ const Analytics = () => {
               Voters List
             </Typography>
             <ListContainer>
-              {votes &&
-                votes?.map((obj, idx) => (
+              {vote_list &&
+                vote_list?.map((obj, idx) => (
                   <Box
                     key={idx}
                     sx={{
                       display: "flex",
                       flexDirection: "column",
-                      border: "1px solid green",
+                      border:
+                        obj.user_id === user?._id
+                          ? "1px solid green"
+                          : "1px solid white",
                       padding: "1rem",
                       borderRadius: "6px",
                     }}
@@ -233,7 +224,7 @@ const Analytics = () => {
                           color: "rgba(255,255,255,0.6)",
                         }}
                       >
-                        {moment(new Date()).format(
+                        {moment(obj.updatedAt).format(
                           "dddd, MMMM Do YYYY, h:mm A"
                         )}
                       </Typography>
@@ -241,7 +232,7 @@ const Analytics = () => {
                         sx={{
                           width: "15px",
                           height: "15px",
-                          backgroundColor: whereItBelong(obj.vote),
+                          backgroundColor: whereItBelong(obj.index),
                         }}
                       ></Box>
                     </div>
@@ -251,7 +242,7 @@ const Analytics = () => {
           </VotersListContainer>
         </>
       )}
-      {desktopOS?.length === 0 && (
+      {!poll && (
         <Box
           sx={{
             display: "flex",
@@ -265,7 +256,7 @@ const Analytics = () => {
             Create new poll
           </Typography>
           <MuiButton
-          onClick={() => setCreate(true)}
+            onClick={() => setCreate(true)}
             sx={{
               background: "linear-gradient(135deg, #FF3D00, #D50000)", // Red gradient
               color: "white",
@@ -289,7 +280,7 @@ const Analytics = () => {
       )}
 
       <ModalComponent open={create} handleClose={() => setCreate(false)}>
-        <Create />
+        <Create setCreate={setCreate} />
       </ModalComponent>
     </Box>
   );

@@ -3,20 +3,27 @@ import React, { useCallback, useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
 import SnackbarComponent from "./Snackbar";
+import UserService from "../api/service/user.service";
 
 const Register = React.memo(() => {
   const [name, setName] = useState("");
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [severity, setSeverity] = useState("success");
 
-  const onClick = useCallback(async () => {
+  const onClick = useCallback(() => {
     if (name?.length < 3) {
       setOpenSnackBar(true);
       setSeverity("error");
       return;
     }
-    localStorage.setItem("user", JSON.stringify(name));
-    window.location.reload();
+    UserService.regiser(name)
+      .then((data) => {
+        localStorage.setItem("user", JSON.stringify(data.data));
+        window.location.reload();
+      })
+      .catch((error) => {
+        console.error(error.message);
+      });
   }, [name]);
 
   return (

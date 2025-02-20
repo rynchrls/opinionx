@@ -1,17 +1,13 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Tabs, Tab, Box } from "@mui/material";
 import CurrentPoll from "./CurrentPoll";
 import Analytics from "./Analytics";
+import propTypes from "prop-types";
+import { useSelector } from "react-redux";
 
-const Poll = () => {
+const Poll = ({ loading }) => {
   const [value, setValue] = useState("one");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
-  }, []);
+  const vote_list = useSelector((state) => state.opinion.vote_list);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -44,7 +40,11 @@ const Poll = () => {
         }}
       >
         <Tab value="one" label="Poll" />
-        <Tab value="two" label="Analytics" disabled={loading} />
+        <Tab
+          value="two"
+          label="Analytics"
+          disabled={vote_list?.length === 0 || !vote_list ? true : false}
+        />
       </Tabs>
       {value === "one" && <CurrentPoll loading={loading} />}
       {value === "two" && <Analytics />}
@@ -53,3 +53,8 @@ const Poll = () => {
 };
 
 export default Poll;
+
+Poll.propTypes = {
+  loading: propTypes.bool,
+  setLoading: propTypes.func,
+};

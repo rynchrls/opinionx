@@ -1,8 +1,26 @@
 import { Box } from "@mui/material";
 import Header from "../components/Header";
 import Poll from "../components/Poll";
+import { useDispatch } from "../store/store";
+import { useEffect, useState } from "react";
+import { fetchInitial } from "../store/slices/opinion.slice";
+import { useParams } from "react-router-dom";
 
 function Homepage() {
+  const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
+  const { pId } = useParams();
+
+  const initial = () => {
+    setLoading(true);
+    dispatch(fetchInitial(pId, dispatch));
+    setLoading(false);
+  };
+  useEffect(() => {
+    initial();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pId]);
   return (
     <Box
       sx={{
@@ -20,7 +38,7 @@ function Homepage() {
       }}
     >
       <Header />
-      <Poll />
+      <Poll loading={loading} />
     </Box>
   );
 }

@@ -9,55 +9,14 @@ import CopyButton from "./CopyButton";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { Button as MuiButton } from "@mui/material";
+import { useSelector } from "react-redux";
 
 function Header() {
   const [create, setCreate] = useState(false);
   const [openList, setOpenList] = useState(false);
+  const list = useSelector((state) => state.opinion.my_poll);
 
   const navigate = useNavigate();
-  const list = [
-    // {
-    //   title: "Poll",
-    //   date: new Date(),
-    // },
-    // {
-    //   title: "Poll",
-    //   date: new Date(),
-    // },
-    // {
-    //   title: "Poll",
-    //   date: new Date(),
-    // },
-    // {
-    //   title: "Poll",
-    //   date: new Date(),
-    // },
-    // {
-    //   title: "Poll",
-    //   date: new Date(),
-    // },
-    // {
-    //   title: "Poll",
-    //   date: new Date(),
-    // },
-    // {
-    //   title: "Poll",
-    //   date: new Date(),
-    // },
-    // {
-    //   title: "Poll",
-    //   date: new Date(),
-    // },
-    // {
-    //   title: "Poll",
-    //   date: new Date(),
-    // },
-    // {
-    //   title: "Poll",
-    //   date: new Date(),
-    // },
-  ];
-
   return (
     <Box
       sx={{
@@ -96,7 +55,7 @@ function Header() {
         </Box>
       </Button>
       <ModalComponent open={create} handleClose={() => setCreate(false)}>
-        <Create />
+        <Create setCreate={setCreate} />
       </ModalComponent>
       <ModalComponent open={openList} handleClose={() => setOpenList(false)}>
         <Box
@@ -116,7 +75,7 @@ function Header() {
           >
             List
           </Typography>
-          {list?.length === 0 && (
+          {list && list?.length === 0 && (
             <Box
               sx={{
                 display: "flex",
@@ -172,7 +131,7 @@ function Header() {
                   <AccompanyButton
                     key={idx}
                     onClick={() => {
-                      navigate(`/${idx}`, { replace: true });
+                      navigate(`/${obj._id}`, { replace: true });
                       setOpenList(false);
                     }}
                     sx={{
@@ -191,6 +150,7 @@ function Header() {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
+                        width: "100%",
                       }}
                     >
                       <Typography
@@ -199,9 +159,13 @@ function Header() {
                           fontSize: "20px",
                           fontWeight: "bold",
                           letterSpacing: "1px",
+                          wordWrap: "break-word", // Ensures long words wrap
+                          overflowWrap: "break-word", // Alternative for better wrapping
+                          whiteSpace: "normal", // Allows text to wrap
+                          maxWidth: "100%", // Prevents text from overflowing its container
                         }}
                       >
-                        {obj.title} {idx}
+                        {obj.title}
                       </Typography>
                     </div>
                     <div
@@ -217,7 +181,9 @@ function Header() {
                           color: "rgba(255,255,255,0.6)",
                         }}
                       >
-                        {moment(obj.date).format("dddd, MMMM Do YYYY, h:mm A")}
+                        {moment(obj.createdAt || new Date()).format(
+                          "dddd, MMMM Do YYYY, h:mm A"
+                        )}
                       </Typography>
                     </div>
                   </AccompanyButton>

@@ -1,49 +1,109 @@
 import { Box, Checkbox, CircularProgress, Typography } from "@mui/material";
 import { Button as MuiButton } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalComponent from "./ModalComponent";
 import Create, { Options, TextFieldComponent } from "./Create";
 import propTypes from "prop-types";
+import { useSelector, useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import { setVote as SetNewVote } from "../store/slices/opinion.slice";
+import VoteService from "../api/service/vote.service";
+
+const user = JSON.parse(localStorage.getItem("user"));
 
 const CurrentPoll = ({ loading }) => {
+  const poll = useSelector((state) => state.opinion.poll);
+  const myVote = useSelector((state) => state.opinion.vote);
   const [vote, setVote] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(null); // Track the selected checkbox
+  const [selectedIndex, setSelectedIndex] = useState(
+    () => myVote?.index || null
+  );
   const [create, setCreate] = useState(false);
   const [submit, setSubmit] = useState(false);
+  const dispatch = useDispatch();
+  const { pId } = useParams();
 
-  const submitVote = async () => {
+  useEffect(() => {
+    setSelectedIndex(myVote?.index);
+  }, [myVote]); // Runs whenever myVote changes
+
+  const submitVote = () => {
+    if (selectedIndex === myVote?.index) {
+      setVote(false);
+      return;
+    }
     setSubmit(true);
-    setTimeout(() => {
-      setSubmit(false);
-    }, 2000);
+    const initialVote = {
+      vote: poll?.options[selectedIndex]?.title,
+      name: user?.name,
+      user_id: user?._id,
+      poll_id: pId,
+      index: selectedIndex,
+    };
+    if (!myVote) {
+      const updatedOptions = poll?.options?.map((obj, idx) => {
+        if (obj.title === initialVote.vote && idx === initialVote.index) {
+          return {
+            ...obj,
+            votes: obj?.votes + 1,
+          };
+        } else {
+          return obj;
+        }
+      });
+      const updatedPoll = {
+        ...poll,
+        options: [...updatedOptions],
+        total_votes: poll?.total_votes + 1,
+      };
+      dispatch(SetNewVote({ updatedPoll, initialVote, add: true }));
+      VoteService.create({
+        vote: initialVote?.vote,
+        name: user?.name,
+        user_id: user?._id,
+        poll_id: pId,
+        index: selectedIndex,
+        options: updatedPoll?.options || [],
+        total_votes: updatedPoll?.total_votes,
+      });
+    } else {
+      const updatedOptions = poll?.options?.map((obj, idx) => {
+        if (obj.title === myVote?.vote && idx === myVote?.index) {
+          return {
+            ...obj,
+            votes: obj?.votes - 1,
+          };
+        }
+        if (obj.title === initialVote.vote && idx === initialVote.index) {
+          return {
+            ...obj,
+            votes: obj?.votes + 1,
+          };
+        }
+
+        return obj;
+      });
+      const updatedPoll = {
+        ...poll,
+        options: [...updatedOptions],
+      };
+      dispatch(SetNewVote({ updatedPoll, initialVote }));
+      VoteService.create({
+        vote: initialVote?.vote,
+        name: user?.name,
+        user_id: user?._id,
+        poll_id: pId,
+        index: selectedIndex,
+        options: updatedPoll?.options || [],
+      });
+    }
+    setSubmit(false);
+    setVote(false);
   };
 
   const handleCheckboxChange = (index) => {
     setSelectedIndex(index); // Update selected checkbox index
   };
-
-  const sampleData = [
-    {
-      vote: "Lorem ipsum Bla Bla Bla Bla dsadsa dsad sad",
-      count: 0,
-    },
-    {
-      vote: "Lorem ipsum Bla Bla Bla Bla",
-      count: 1,
-    },
-    {
-      vote: "Lorem ipsum Bla Bla Bla Bla",
-      count: 2,
-    },
-    {
-      vote: "Lorem ipsum Bla Bla Bla Bla",
-      count: 3,
-    },
-    {
-      vote: "Lorem ipsum Bla Bla Bla Bla",
-      count: 4,
-    },
-  ];
 
   return (
     <Box
@@ -55,7 +115,7 @@ const CurrentPoll = ({ loading }) => {
         justifyContent: "center",
       }}
     >
-      {sampleData?.length > 0 && !loading && (
+      {poll?.options?.length > 0 && !loading && (
         <Box
           sx={{
             width: "550px",
@@ -70,14 +130,19 @@ const CurrentPoll = ({ loading }) => {
         >
           <Typography
             color="white"
-            fontSize={"16px"}
+            fontSize={"18px"}
             fontWeight={600}
             letterSpacing={"1px"}
+            sx={{
+              wordWrap: "break-word", // Ensures long words wrap
+              overflowWrap: "break-word", // Alternative for better wrapping
+              whiteSpace: "normal", // Allows text to wrap
+              maxWidth: "100%", // Prevents text from overflowing its container
+            }}
           >
-            What is your favourite anime and why? do you have any preferrence on
-            what anime should. Everythings fine thos dsadsa dsad asdssadsadas
-            dsa
+            {poll?.title}
           </Typography>
+
           <Box
             sx={{
               display: "flex",
@@ -85,13 +150,13 @@ const CurrentPoll = ({ loading }) => {
               gap: "1rem",
             }}
           >
-            {sampleData &&
-              sampleData.map((obj, idx) => (
+            {poll &&
+              poll?.options?.map((obj, idx) => (
                 <Box
                   key={idx}
                   sx={{
                     width: "100%",
-                    height: "50px", // Adjust height as needed
+                    height: "45px", // Adjust height as needed
                     backgroundColor: "rgba(82, 82, 82, 0.3)",
                     borderRadius: "6px",
                     position: "relative",
@@ -100,22 +165,24 @@ const CurrentPoll = ({ loading }) => {
                   <Typography
                     sx={{
                       position: "absolute",
-                      top: "22%",
+                      top: "26%",
                       left: "3%",
                       color: "white",
+                      fontSize: "14px",
                     }}
                   >
-                    {obj.vote}
+                    {obj.title}
                   </Typography>
                   <Typography
                     sx={{
                       position: "absolute",
-                      top: "23%",
+                      top: "26%",
                       right: "3%",
                       color: "white",
+                      fontSize: "14px",
                     }}
                   >
-                    {obj.count}%
+                    {obj.votes}
                   </Typography>
                   {/* Filled Range */}
                   <Box
@@ -162,17 +229,21 @@ const CurrentPoll = ({ loading }) => {
             >
               <Typography
                 color="white"
-                fontSize={"16px"}
+                fontSize={"18px"}
                 fontWeight={600}
                 letterSpacing={"1px"}
+                sx={{
+                  wordWrap: "break-word", // Ensures long words wrap
+                  overflowWrap: "break-word", // Alternative for better wrapping
+                  whiteSpace: "normal", // Allows text to wrap
+                  maxWidth: "100%", // Prevents text from overflowing its container
+                }}
               >
-                What is your favourite anime and why? do you have any
-                preferrence on what anime should. Everythings fine thos dsadsa
-                dsad asdssadsadas dsa
+                {poll?.title}
               </Typography>
               <Options>
-                {sampleData &&
-                  sampleData.map((obj, idx) => (
+                {poll &&
+                  poll?.options?.map((obj, idx) => (
                     <div
                       key={idx}
                       style={{
@@ -183,10 +254,10 @@ const CurrentPoll = ({ loading }) => {
                         gap: "1rem",
                       }}
                     >
-                      <TextFieldComponent name={obj?.vote} isDisabled={true} />
+                      <TextFieldComponent name={obj?.title} isDisabled={true} />
                       <Checkbox
                         checked={selectedIndex === idx} // Only one checkbox can be checked
-                        onChange={() => handleCheckboxChange(idx, obj)}
+                        onChange={() => handleCheckboxChange(idx)}
                         sx={{
                           color: "white", // Default color
                           "&.Mui-checked": {
@@ -265,7 +336,7 @@ const CurrentPoll = ({ loading }) => {
           </ModalComponent>
         </Box>
       )}
-      {sampleData?.length === 0 && !loading && (
+      {!poll && !loading && (
         <Box
           sx={{
             display: "flex",
@@ -303,7 +374,7 @@ const CurrentPoll = ({ loading }) => {
       )}
       {loading && <CircularProgress size={56} sx={{ color: "white" }} />}
       <ModalComponent open={create} handleClose={() => setCreate(false)}>
-        <Create />
+        <Create setCreate={setCreate} />
       </ModalComponent>
     </Box>
   );

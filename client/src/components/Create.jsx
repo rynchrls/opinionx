@@ -11,6 +11,10 @@ import Button from "./Button";
 import { IoIosAdd } from "react-icons/io";
 import SnackbarComponent from "./Snackbar";
 import { MdCancel } from "react-icons/md";
+import PollService from "../api/service/poll.service";
+import { useDispatch } from "react-redux";
+import { setPoll } from "../store/slices/opinion.slice";
+import { useNavigate } from "react-router-dom";
 
 export const Options = styled.div`
   display: flex;
@@ -21,7 +25,9 @@ export const Options = styled.div`
   justify-content: center;
 `;
 
-const Create = () => {
+const user = JSON.parse(localStorage.getItem("user"));
+
+const Create = ({ setCreate }) => {
   const [newPoll, setNewPoll] = useState({
     title: "",
     options: [
@@ -30,16 +36,18 @@ const Create = () => {
         votes: 0,
       },
     ],
-    limit: 0,
+    total_votes: 0,
+    user_id: user?._id,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   let severity = "error";
 
   const generateOption = () => {
     if (newPoll.options.length > 5) {
-      setError(true);
       return;
     }
     setNewPoll((prev) => {
@@ -50,12 +58,27 @@ const Create = () => {
     });
   };
 
-  const submitPoll = async () => {
-    console.log(newPoll);
+  const submitPoll = () => {
+    if (
+      newPoll.options.length < 2 ||
+      newPoll.title === "" ||
+      newPoll.options[0].title === "" ||
+      newPoll.options[1].title === ""
+    ) {
+      setError(true);
+      return;
+    }
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+    PollService.create(newPoll)
+      .then((data) => {
+        dispatch(setPoll(data.data));
+        navigate(`/${data?.data?._id}`, { replace: true });
+      })
+      .catch((error) => {
+        console.error(error.message);
+      });
+    setLoading(false);
+    setCreate(false);
   };
 
   return (
@@ -110,7 +133,7 @@ const Create = () => {
                     return { ...prev, options: [...updated] };
                   })
                 }
-                maxCharacters={45}
+                maxCharacters={30}
                 placeholder={`Option ${idx + 1}`}
               />
               <MdCancel
@@ -157,13 +180,17 @@ const Create = () => {
         setOpenSnackBar={setError}
         severity={severity}
       >
-        Only 5 options are available.
+        Please add atleast 2 options and a title.
       </SnackbarComponent>
     </Box>
   );
 };
 
 export default Create;
+
+Create.propTypes = {
+  setCreate: propTypes.func,
+};
 
 export const TextFieldComponent = ({
   name,
