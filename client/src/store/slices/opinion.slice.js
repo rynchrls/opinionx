@@ -1,6 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import PollService from "../../api/service/poll.service";
-import VoteService from "../../api/service/vote.service";
 
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -44,36 +42,36 @@ const opinionSlice = createSlice({
   },
 });
 
-export const fetchInitial = (pollId, dispatch) => {
-  return async () => {
-    let initialData = {};
+// export const fetchInitial = (pollId, dispatch) => {
+//   return async () => {
+//     let initialData = {};
 
-    try {
-      if (pollId) {
-        const pollRes = await PollService.get(pollId);
-        initialData["poll"] = pollRes.data;
+//     try {
+//       if (pollId) {
+//         const pollRes = await PollService.get(pollId);
+//         initialData["poll"] = pollRes.data;
 
-        const voteRes = await VoteService.get(pollId);
-        initialData["vote"] = voteRes.data;
-      }
+//         const voteRes = await VoteService.get(pollId);
+//         initialData["vote"] = voteRes.data;
+//       }
 
-      if (pollId && user?._id) {
-        const myVoteRes = await VoteService.get_mine(user._id, pollId);
-        initialData["my_vote"] = myVoteRes.data;
-      }
-      const myPollRess = await PollService.getMine(user?._id);
-      initialData["my_poll"] = myPollRess.data || [];
+//       if (pollId && user?._id) {
+//         const myVoteRes = await VoteService.get_mine(user._id, pollId);
+//         initialData["my_vote"] = myVoteRes.data;
+//       }
+//       const myPollRess = await PollService.getMine(user?._id);
+//       initialData["my_poll"] = myPollRess.data || [];
 
-      dispatch(setInitial(initialData));
-    } catch (error) {
-      initialData["poll"] = null;
-      initialData["vote"] = [];
-      initialData["my_vote"] = null;
-      dispatch(setInitial(initialData));
-      console.error(error.message);
-    }
-  };
-};
+//       dispatch(setInitial(initialData));
+//     } catch (error) {
+//       initialData["poll"] = null;
+//       initialData["vote"] = [];
+//       initialData["my_vote"] = null;
+//       dispatch(setInitial(initialData));
+//       console.error(error.message);
+//     }
+//   };
+// };
 
 export const { setInitial, setPoll, setVote } = opinionSlice.actions;
 export default opinionSlice.reducer;
