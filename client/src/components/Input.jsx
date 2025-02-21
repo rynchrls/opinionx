@@ -1,8 +1,9 @@
-import { TextField } from "@mui/material";
+import { TextField, useMediaQuery } from "@mui/material";
 import React from "react";
 import propTypes from "prop-types";
 
 const Input = React.memo(({ name, setName, onClick }) => {
+  const isMobile = useMediaQuery("(max-width:800px)");
   return (
     <TextField
       variant="outlined"
@@ -17,7 +18,7 @@ const Input = React.memo(({ name, setName, onClick }) => {
         }
       }}
       sx={{
-        width: "45%",
+        width: isMobile ? "70%" : "45%",
         backgroundColor: "#121212", // Darker background
         borderRadius: "8px",
         input: {

@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 function Homepage() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [value, setValue] = useState("one");
 
   const { pId } = useParams();
 
@@ -37,8 +38,8 @@ function Homepage() {
         gap: "2rem",
       }}
     >
-      <Header />
-      <Poll loading={loading} />
+      <Header setValue={setValue} />
+      <Poll loading={loading} value={value} setValue={setValue} />
     </Box>
   );
 }

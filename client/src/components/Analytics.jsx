@@ -1,60 +1,62 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useMediaQuery } from "@mui/material";
 import { Button as MuiButton } from "@mui/material";
-import { PieChart } from "@mui/x-charts/PieChart";
+// import { PieChart } from "@mui/x-charts/PieChart";
 import moment from "moment";
 import styled from "styled-components";
 import ModalComponent from "./ModalComponent";
 import Create from "./Create";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 
-const PieContainer = styled.div`
-  width: 515px;
-  height: auto; /* Increased height to accommodate legend */
-  background-color: rgba(0, 0, 0, 0.4);
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 1rem;
-`;
+// const PieContainer = styled.div`
+//   width: 45%;
+//   height: auto; /* Increased height to accommodate legend */
+//   background-color: rgba(0, 0, 0, 0.4);
+//   border-radius: 16px;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: flex-start;
+//   justify-content: center;
+//   padding: 1rem;
+// `;
 
-const ChartWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-`;
+// const ChartWrapper = styled.div`
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   width: 100%;
+// `;
 
-const LegendContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 24px;
-`;
+// const LegendContainer = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   flex-wrap: wrap;
+//   flex-direction: column;
+//   gap: 10px;
+//   margin-top: 24px;
+//   width: 100%;
+// `;
 
-const LegendItem = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-  color: white;
-  font-family: "Poppins, sans-serif";
-`;
+// const LegendItem = styled.div`
+//   width: 100%;
+//   display: flex;
+//   align-items: center;
+//   font-size: 14px;
+//   color: white;
+//   font-family: "Poppins, sans-serif";
+// `;
 
-const LegendColor = styled.div`
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: ${(props) => props.color};
-  margin-right: 6px;
-`;
+// const LegendColor = styled.div`
+//   width: 12px;
+//   height: 12px;
+//   border-radius: 50%;
+//   background-color: ${(props) => props.color};
+//   margin-right: 6px;
+// `;
 
 const VotersListContainer = styled.div`
-  width: 50%;
-  height: 500px;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.4);
   border-radius: 16px;
 
@@ -92,32 +94,20 @@ const ListContainer = styled.div`
   overflow: auto;
 `;
 
-const valueFormatter = (item) => `${item.value}%`;
+// const valueFormatter = (item) => `${item.value}%`;
 
 const user = JSON.parse(localStorage.getItem("user"));
 
+// @media (max-width: 800px) {
+//   gap: 0.5rem; /* Adjust spacing */
+// }
+
 const Analytics = () => {
-  const pieColors = ["#FF5733", "#0066FF", "#28A745", "#FF9800", "#8E24AA"];
   const [create, setCreate] = useState(false);
-  const [pollOptions, setPollOptions] = useState([]);
   const poll = useSelector((state) => state.opinion.poll);
   const vote_list = useSelector((state) => state.opinion.vote_list);
 
-  useEffect(() => {
-    setPollOptions(() => {
-      const labeledOptions = poll?.options?.map((obj) => {
-        return {
-          label: obj.title,
-          value: obj.votes,
-        };
-      });
-      return labeledOptions;
-    });
-  }, [poll]);
-
-  const whereItBelong = (index) => {
-    return pieColors[index];
-  };
+  const isMobile = useMediaQuery("(max-width:800px)");
 
   return (
     <Box
@@ -131,42 +121,8 @@ const Analytics = () => {
         padding: "1rem 0rem 0rem 0rem",
       }}
     >
-      {pollOptions?.length > 0 && vote_list && (
+      {poll?.options?.length > 0 && vote_list && (
         <>
-          <PieContainer>
-            <ChartWrapper>
-              <PieChart
-                series={[
-                  {
-                    data: pollOptions,
-                    highlightScope: { fade: "global", highlight: "item" },
-                    faded: {
-                      innerRadius: 30,
-                      additionalRadius: -30,
-                      color: "gray",
-                    },
-                    valueFormatter,
-                  },
-                ]}
-                colors={pieColors}
-                height={250}
-                width={400}
-                slotProps={{
-                  legend: { hidden: true }, // Hides default legend
-                }}
-              />
-            </ChartWrapper>
-
-            {/* Separate Legend Below */}
-            <LegendContainer>
-              {pollOptions?.map((option, index) => (
-                <LegendItem key={index}>
-                  <LegendColor color={pieColors[index]} />
-                  <Typography> {option.label}</Typography>
-                </LegendItem>
-              ))}
-            </LegendContainer>
-          </PieContainer>
           <VotersListContainer>
             <Typography
               variant="h5"
@@ -188,8 +144,9 @@ const Analytics = () => {
                         obj.user_id === user?._id
                           ? "1px solid green"
                           : "1px solid white",
-                      padding: "1rem",
+                      padding: isMobile ? "0.5rem" : "1rem",
                       borderRadius: "6px",
+                      width: "100%",
                     }}
                   >
                     <div
@@ -197,19 +154,32 @@ const Analytics = () => {
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "space-between",
+                        gap: "3rem",
+                        width: "100%",
                       }}
                     >
                       <Typography
                         color="white"
                         sx={{
-                          fontSize: "20px",
+                          fontSize: isMobile ? "16px" : "20px",
                           fontWeight: "bold",
                           letterSpacing: "1px",
                         }}
                       >
                         {obj.name}
                       </Typography>
-                      <Typography color="white">{obj.vote}</Typography>
+                      <Typography
+                        color="white"
+                        fontSize={isMobile && "12px"}
+                        sx={{
+                          wordWrap: "break-word", // Ensures long words wrap
+                          overflowWrap: "break-word", // Alternative for better wrapping
+                          whiteSpace: "normal", // Allows text to wrap
+                          maxWidth: "50%", // Prevents text from overflowing its container
+                        }}
+                      >
+                        {obj.vote}
+                      </Typography>
                     </div>
                     <div
                       style={{
@@ -220,7 +190,7 @@ const Analytics = () => {
                     >
                       <Typography
                         sx={{
-                          fontSize: "12px",
+                          fontSize: isMobile ? "10px" : "12px",
                           color: "rgba(255,255,255,0.6)",
                         }}
                       >
@@ -228,13 +198,6 @@ const Analytics = () => {
                           "dddd, MMMM Do YYYY, h:mm A"
                         )}
                       </Typography>
-                      <Box
-                        sx={{
-                          width: "15px",
-                          height: "15px",
-                          backgroundColor: whereItBelong(obj.index),
-                        }}
-                      ></Box>
                     </div>
                   </Box>
                 ))}
@@ -287,3 +250,52 @@ const Analytics = () => {
 };
 
 export default Analytics;
+{
+  /* <PieContainer>
+<ChartWrapper>
+  <PieChart
+    series={[
+      {
+        data: pollOptions,
+        highlightScope: { fade: "global", highlight: "item" },
+        faded: {
+          innerRadius: 30,
+          additionalRadius: -30,
+          color: "gray",
+        },
+        valueFormatter,
+      },
+    ]}
+    colors={pieColors}
+    height={250}
+    width={400}
+    slotProps={{
+      legend: { hidden: true }, // Hides default legend
+    }}
+  />
+</ChartWrapper>
+
+{/* Separate Legend Below */
+}
+{
+  /* <LegendContainer>
+  {pollOptions?.map((option, index) => (
+    <LegendItem key={index}>
+      <LegendColor color={pieColors[index]} />
+      <Typography
+        sx={{
+          fontSize: isMobile && "12px",
+          wordWrap: "break-word", // Ensures long words wrap
+          overflowWrap: "break-word", // Alternative for better wrapping
+          whiteSpace: "normal", // Allows text to wrap
+          maxWidth: "80%", // Prevents text from overflowing its container
+        }}
+      >
+        {option.label}
+      </Typography>
+    </LegendItem>
+  ))}
+</LegendContainer> */
+}
+// </PieContainer>
+// */}

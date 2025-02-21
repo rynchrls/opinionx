@@ -1,4 +1,4 @@
-import { Typography } from "@mui/material";
+import { Typography, useMediaQuery } from "@mui/material";
 import React, { useCallback, useState } from "react";
 import Input from "./Input";
 import Button from "./Button";
@@ -9,6 +9,8 @@ const Register = React.memo(() => {
   const [name, setName] = useState("");
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [severity, setSeverity] = useState("success");
+
+  const isMobile = useMediaQuery("(max-width:800px)");
 
   const onClick = useCallback(() => {
     if (name?.length < 3) {
@@ -30,7 +32,7 @@ const Register = React.memo(() => {
     <React.Fragment>
       <Input name={name} setName={setName} onClick={onClick} />
       <Button color={"orange"} onClick={onClick}>
-        <Typography variant="h4">Register</Typography>
+        <Typography variant={isMobile ? "h6" : "h4"} sx={{fontSize: isMobile && '16px'}}>Register</Typography>
       </Button>
       <SnackbarComponent
         openSnackBar={openSnackBar}

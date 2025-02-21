@@ -1,4 +1,10 @@
-import { Box, Checkbox, CircularProgress, Typography } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  CircularProgress,
+  Typography,
+  useMediaQuery,
+} from "@mui/material";
 import { Button as MuiButton } from "@mui/material";
 import { useEffect, useState } from "react";
 import ModalComponent from "./ModalComponent";
@@ -12,6 +18,8 @@ import VoteService from "../api/service/vote.service";
 const user = JSON.parse(localStorage.getItem("user"));
 
 const CurrentPoll = ({ loading }) => {
+  const isMobile = useMediaQuery("(max-width:800px)");
+  const mb = useMediaQuery("(max-width:800px)");
   const poll = useSelector((state) => state.opinion.poll);
   const myVote = useSelector((state) => state.opinion.vote);
   const [vote, setVote] = useState(false);
@@ -105,6 +113,12 @@ const CurrentPoll = ({ loading }) => {
     setSelectedIndex(index); // Update selected checkbox index
   };
 
+  const formatVotes = (votes) => {
+    if (votes >= 1_000_000) return (votes / 1_000_000).toFixed(1) + "M";
+    if (votes >= 1_000) return (votes / 1_000).toFixed(1) + "K";
+    return votes;
+  };
+
   return (
     <Box
       sx={{
@@ -118,11 +132,11 @@ const CurrentPoll = ({ loading }) => {
       {poll?.options?.length > 0 && !loading && (
         <Box
           sx={{
-            width: "550px",
-            height: "530px",
+            width: !isMobile ? "550px" : mb ? "320px" : "420px",
+            height: isMobile ? "430px" : "530px",
             backgroundColor: "rgba(0,0,0,0.5)",
             borderRadius: "8px",
-            padding: "1.5rem",
+            padding: isMobile ? "1.2rem" : "1.5rem",
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
@@ -130,7 +144,7 @@ const CurrentPoll = ({ loading }) => {
         >
           <Typography
             color="white"
-            fontSize={"18px"}
+            fontSize={!isMobile ? "18px" : mb ? "12px" : "14px"}
             fontWeight={600}
             letterSpacing={"1px"}
             sx={{
@@ -147,7 +161,7 @@ const CurrentPoll = ({ loading }) => {
             sx={{
               display: "flex",
               flexDirection: "column",
-              gap: "1rem",
+              gap: mb ? "0.7rem" : "1rem",
             }}
           >
             {poll &&
@@ -156,7 +170,7 @@ const CurrentPoll = ({ loading }) => {
                   key={idx}
                   sx={{
                     width: "100%",
-                    height: "45px", // Adjust height as needed
+                    height: !isMobile ? "45px" : mb ? "32px" : "35px", // Adjust height as needed
                     backgroundColor: "rgba(82, 82, 82, 0.3)",
                     borderRadius: "6px",
                     position: "relative",
@@ -168,7 +182,7 @@ const CurrentPoll = ({ loading }) => {
                       top: "26%",
                       left: "3%",
                       color: "white",
-                      fontSize: "14px",
+                      fontSize: !isMobile ? "14px" : mb ? "10px" : "12px",
                     }}
                   >
                     {obj.title}
@@ -179,19 +193,24 @@ const CurrentPoll = ({ loading }) => {
                       top: "26%",
                       right: "3%",
                       color: "white",
-                      fontSize: "14px",
+                      fontSize: !isMobile ? "14px" : mb ? "10px" : "12px",
                     }}
                   >
-                    {obj.votes}
+                    {formatVotes(obj.votes)}
                   </Typography>
+
                   {/* Filled Range */}
                   <Box
                     sx={{
-                      width: `40%`, // Dynamic width based on value
+                      width: `${Math.min(
+                        (obj.votes / poll?.total_votes) * 100,
+                        100
+                      )}%`,
+                      // Dynamic width based on value
                       height: "100%",
                       backgroundColor: "#007F70",
                       borderRadius: "5px",
-                      transition: "width 0.3s ease-in-out",
+                      transition: "all 0.3s ease-in-out",
                     }}
                   />
                 </Box>
@@ -202,11 +221,11 @@ const CurrentPoll = ({ loading }) => {
             sx={{
               background: "linear-gradient(135deg, #FF3D00, #D50000)", // Red gradient
               color: "white",
-              fontSize: "18px",
+              fontSize: !isMobile ? "18px" : mb ? "12px" : "14px",
               fontWeight: "bold",
               textTransform: "none",
               borderRadius: "6px", // Rectangular shape
-              padding: "8px",
+              padding: isMobile ? "4px" : "8px",
               boxShadow: "0px 8px 0px #A30000", // Darker red 3D shadow
               transition: "all 0.3s ease-in-out",
               "&:hover": {
@@ -229,7 +248,7 @@ const CurrentPoll = ({ loading }) => {
             >
               <Typography
                 color="white"
-                fontSize={"18px"}
+                fontSize={!isMobile ? "18px" : mb ? "12px" : "14px"}
                 fontWeight={600}
                 letterSpacing={"1px"}
                 sx={{
@@ -251,7 +270,7 @@ const CurrentPoll = ({ loading }) => {
                         alignItems: "center",
                         justifyContent: "space-between",
                         width: "100%",
-                        gap: "1rem",
+                        gap: !isMobile ? "1rem" : mb ? "0.2rem" : "0.5rem",
                       }}
                     >
                       <TextFieldComponent name={obj?.title} isDisabled={true} />
@@ -281,7 +300,7 @@ const CurrentPoll = ({ loading }) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  gap: "1rem",
+                  gap: mb ? "0.5rem" : "1rem",
                 }}
               >
                 <MuiButton
@@ -290,11 +309,15 @@ const CurrentPoll = ({ loading }) => {
                     width: "50%",
                     background: "linear-gradient(135deg, #FFFFFF, #E0E0E0)", // White gradient
                     color: "#333", // Dark text for contrast
-                    fontSize: "18px",
+                    fontSize: !isMobile ? "18px" : mb ? "12px" : "14px",
                     fontWeight: "bold",
                     textTransform: "none",
                     borderRadius: "8px", // Rectangular shape
-                    padding: "14px 28px",
+                    padding: !isMobile
+                      ? "14px 28px"
+                      : mb
+                      ? "8px 12px"
+                      : "10px 14px",
                     boxShadow: "0px 8px 0px #B0B0B0", // Light gray 3D shadow
                     transition: "all 0.3s ease-in-out",
                     "&:hover": {
@@ -315,11 +338,15 @@ const CurrentPoll = ({ loading }) => {
                     width: "50%",
                     background: "linear-gradient(135deg, #00C853, #00E676)", // Green gradient
                     color: "white",
-                    fontSize: "18px",
+                    fontSize: !isMobile ? "18px" : mb ? "12px" : "14px",
                     fontWeight: "bold",
                     textTransform: "none",
                     borderRadius: "8px", // Rectangular shape
-                    padding: "14px 28px",
+                    padding: !isMobile
+                      ? "14px 28px"
+                      : mb
+                      ? "8px 12px"
+                      : "10px 14px",
                     boxShadow: "0px 8px 0px #00A152", // Darker green 3D shadow
                     transition: "all 0.3s ease-in-out",
                     "&:hover": {
@@ -346,7 +373,10 @@ const CurrentPoll = ({ loading }) => {
             gap: "1rem",
           }}
         >
-          <Typography color="rgba(255,255,255,0.5)" variant="h5">
+          <Typography
+            color="rgba(255,255,255,0.5)"
+            variant={isMobile ? "h6" : "h5"}
+          >
             Create new poll
           </Typography>
           <MuiButton
@@ -354,11 +384,11 @@ const CurrentPoll = ({ loading }) => {
             sx={{
               background: "linear-gradient(135deg, #FF3D00, #D50000)", // Red gradient
               color: "white",
-              fontSize: "16px",
+              fontSize: isMobile ? "14px" : "16px",
               fontWeight: "bold",
               textTransform: "none",
               borderRadius: "6px", // Rectangular shape
-              padding: "8px 16px",
+              padding: isMobile ? "6px 12px" : "8px 16px",
               boxShadow: "0px 8px 0px #A30000", // Darker red 3D shadow
               transition: "all 0.3s ease-in-out",
               "&:hover": {

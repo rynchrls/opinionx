@@ -1,5 +1,5 @@
 import propTypes from "prop-types";
-import { Alert, Snackbar } from "@mui/material";
+import { Alert, Snackbar, useMediaQuery } from "@mui/material";
 
 const SnackbarComponent = ({
   openSnackBar,
@@ -7,6 +7,7 @@ const SnackbarComponent = ({
   children,
   severity,
 }) => {
+  const isMobile = useMediaQuery("(max-width:800px)");
   const handleCloseSnackbar = () => {
     setOpenSnackBar(false); // Close the snackbar
   };
@@ -20,7 +21,10 @@ const SnackbarComponent = ({
         horizontal: "center", // Positioning horizontally at the right
       }}
     >
-      <Alert severity={severity} sx={{ width: "100%", fontSize: "16px" }}>
+      <Alert
+        severity={severity}
+        sx={{ width: "100%", fontSize: isMobile ? "12px" : "16px" }}
+      >
         {children}
       </Alert>
     </Snackbar>

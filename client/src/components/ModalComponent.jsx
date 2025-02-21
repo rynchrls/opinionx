@@ -1,21 +1,10 @@
-import { Box, Modal } from "@mui/material";
+import { Box, Modal, useMediaQuery } from "@mui/material";
 import propTypes from "prop-types";
 import { memo } from "react";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "500px",
-  height: "600px",
-  bgcolor: "rgba(0,0,0,1)",
-  borderRadius: "6px",
-  boxShadow: 24,
-  p: 4,
-};
-
 const ModalComponent = memo(({ open, handleClose, children }) => {
+  const isMobile = useMediaQuery("(max-width:800px)");
+  const mb = useMediaQuery("(max-width:500px)");
   return (
     <Modal
       open={open}
@@ -23,7 +12,22 @@ const ModalComponent = memo(({ open, handleClose, children }) => {
       aria-labelledby="modal-modal-title"
       aria-describedby="modal-modal-description"
     >
-      <Box sx={style}>{children}</Box>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: !isMobile ? "500px" : mb ? "300px" : "450px",
+          height: isMobile ? "60%" : "600px",
+          bgcolor: "rgba(0,0,0,1)",
+          borderRadius: "6px",
+          boxShadow: 24,
+          p: isMobile ? 2 : 4,
+        }}
+      >
+        {children}
+      </Box>
     </Modal>
   );
 });

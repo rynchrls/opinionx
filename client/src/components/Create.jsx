@@ -3,6 +3,7 @@ import {
   TextField,
   Button as GeneralButton,
   InputAdornment,
+  useMediaQuery,
 } from "@mui/material";
 import propTypes from "prop-types";
 import { useState } from "react";
@@ -23,11 +24,19 @@ export const Options = styled.div`
   flex-grow: 1;
   align-items: center;
   justify-content: center;
+
+  @media (max-width: 800px) {
+    gap: 0.5rem; /* Adjust spacing */
+  }
+  @media (max-width: 500px) {
+    gap: 1px; /* Adjust spacing */
+  }
 `;
 
 const user = JSON.parse(localStorage.getItem("user"));
 
-const Create = ({ setCreate }) => {
+const Create = ({ setCreate, setValue }) => {
+  const isMobile = useMediaQuery("(max-width:800px)");
   const [newPoll, setNewPoll] = useState({
     title: "",
     options: [
@@ -79,6 +88,7 @@ const Create = ({ setCreate }) => {
       });
     setLoading(false);
     setCreate(false);
+    setValue("one");
   };
 
   return (
@@ -89,7 +99,7 @@ const Create = ({ setCreate }) => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        gap: "2rem",
+        gap: isMobile ? "1rem" : "2rem",
       }}
     >
       <TextFieldComponent
@@ -190,6 +200,7 @@ export default Create;
 
 Create.propTypes = {
   setCreate: propTypes.func,
+  setValue: propTypes.func,
 };
 
 export const TextFieldComponent = ({
@@ -199,6 +210,8 @@ export const TextFieldComponent = ({
   isDisabled,
   maxCharacters,
 }) => {
+  const isMobile = useMediaQuery("(max-width:800px)");
+  const mb = useMediaQuery("(max-width:500px)");
   const handleChange = (e) => {
     if (e.target.value.length <= maxCharacters) {
       setName(e.target.value);
@@ -222,7 +235,8 @@ export const TextFieldComponent = ({
         borderRadius: "8px",
         input: {
           color: "white", // White text
-          padding: "12px",
+          padding: !isMobile ? "12px" : mb ? "8px" : "10px",
+          fontSize: isMobile && "12px",
         },
         "& .MuiOutlinedInput-root": {
           "& fieldset": {
@@ -252,7 +266,10 @@ export const TextFieldComponent = ({
             {maxCharacters && (
               <InputAdornment
                 position="end"
-                sx={{ color: "rgba(255,255,255,0.6)", fontSize: "14px" }}
+                sx={{
+                  color: "rgba(255,255,255,0.6)",
+                  fontSize: isMobile ? "12px" : "14px",
+                }}
               >
                 {name.length}/{maxCharacters}
               </InputAdornment>

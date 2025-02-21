@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 import propTypes from "prop-types";
 
 export default function CopyButton({ text }) {
+  const isMobile = useMediaQuery("(max-width:800px)");
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -21,7 +22,7 @@ export default function CopyButton({ text }) {
         variant="body1"
         sx={{
           fontWeight: "500",
-          fontSize: "16px",
+          fontSize: isMobile ? "13px" : "16px",
           lineHeight: "20px",
           mb: "10px",
           opacity: ".8",
@@ -49,7 +50,7 @@ export default function CopyButton({ text }) {
             background: "transparent",
             border: "none",
             outline: "none",
-            fontSize: "16px",
+            fontSize: isMobile ? "13px" : "16px",
             color: "#fff",
           }}
           value={text}
@@ -69,7 +70,9 @@ export default function CopyButton({ text }) {
           }}
           onClick={handleCopy}
         >
-          <Typography>{copied ? "Copied" : "Copy"}</Typography>
+          <Typography sx={{ fontSize: isMobile && "13px" }}>
+            {copied ? "Copied" : "Copy"}
+          </Typography>
         </Button>
       </Box>
     </Box>

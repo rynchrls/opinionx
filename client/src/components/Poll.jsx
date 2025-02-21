@@ -1,12 +1,11 @@
-import { useState } from "react";
+
 import { Tabs, Tab, Box } from "@mui/material";
 import CurrentPoll from "./CurrentPoll";
 import Analytics from "./Analytics";
 import propTypes from "prop-types";
 import { useSelector } from "react-redux";
 
-const Poll = ({ loading }) => {
-  const [value, setValue] = useState("one");
+const Poll = ({ loading, value, setValue }) => {
   const vote_list = useSelector((state) => state.opinion.vote_list);
 
   const handleChange = (event, newValue) => {
@@ -57,4 +56,6 @@ export default Poll;
 Poll.propTypes = {
   loading: propTypes.bool,
   setLoading: propTypes.func,
+  value: propTypes.string,
+  setValue: propTypes.func,
 };

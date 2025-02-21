@@ -1,4 +1,9 @@
-import { Box, Typography, Button as AccompanyButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button as AccompanyButton,
+  useMediaQuery,
+} from "@mui/material";
 import { LuGitPullRequestCreateArrow } from "react-icons/lu";
 import { FaListUl } from "react-icons/fa";
 import Button from "./Button";
@@ -10,11 +15,16 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { Button as MuiButton } from "@mui/material";
 import { useSelector } from "react-redux";
+import propTypes from "prop-types";
 
-function Header() {
+function Header({ setValue }) {
   const [create, setCreate] = useState(false);
   const [openList, setOpenList] = useState(false);
   const list = useSelector((state) => state.opinion.my_poll);
+
+  const isMobile = useMediaQuery("(max-width:800px)");
+
+  const mb = useMediaQuery("(max-width:500px)");
 
   const navigate = useNavigate();
   return (
@@ -22,16 +32,27 @@ function Header() {
       sx={{
         width: "100%",
         heigth: "auto",
-        padding: "1rem",
+        padding: mb ? "0.5rem" : "1rem",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
       }}
     >
-      <Button color={"orange"} onClick={() => setCreate(true)}>
+      <Button
+        color={"orange"}
+        onClick={() => {
+          setCreate(true);
+        }}
+      >
         <Box sx={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-          <LuGitPullRequestCreateArrow size={"20px"} />
-          <Typography fontWeight={"bold"} letterSpacing={"0.5px"}>
+          <LuGitPullRequestCreateArrow
+            size={!isMobile ? "20px" : mb ? "13px" : "16px"}
+          />
+          <Typography
+            fontWeight={"bold"}
+            letterSpacing={"0.5px"}
+            fontSize={!isMobile ? "16px" : mb ? "10px" : "12px"}
+          >
             Create Poll
           </Typography>
         </Box>
@@ -41,28 +62,33 @@ function Header() {
         color="white"
         onClick={() => {
           navigate(`/`, { replace: true });
+          setValue("one");
         }}
-        sx={{ cursor: "pointer" }}
+        sx={{ cursor: "pointer", fontSize: isMobile && "20px" }}
       >
         OpinionX
       </Typography>
       <Button color={"purple"} onClick={() => setOpenList(true)}>
         <Box sx={{ display: "flex", alignItems: "center", gap: ".5rem" }}>
-          <FaListUl size={"20px"} />
-          <Typography fontWeight={"bold"} letterSpacing={"0.5px"}>
+          <FaListUl size={!isMobile ? "20px" : mb ? "13px" : "16px"} />
+          <Typography
+            fontWeight={"bold"}
+            letterSpacing={"0.5px"}
+            fontSize={!isMobile ? "16px" : mb ? "10px" : "12px"}
+          >
             Poll List
           </Typography>
         </Box>
       </Button>
       <ModalComponent open={create} handleClose={() => setCreate(false)}>
-        <Create setCreate={setCreate} />
+        <Create setCreate={setCreate} setValue={setValue} />
       </ModalComponent>
       <ModalComponent open={openList} handleClose={() => setOpenList(false)}>
         <Box
           sx={{
             display: "flex",
             flexDirection: "column",
-            gap: "2rem",
+            gap: isMobile ? "1rem" : "2rem",
             height: "100%",
           }}
         >
@@ -72,6 +98,7 @@ function Header() {
             letterSpacing={"0.5px"}
             color="white"
             variant="h6"
+            fontSize={isMobile && "14px"}
           >
             List
           </Typography>
@@ -82,10 +109,13 @@ function Header() {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-                gap: "1rem",
+                gap: isMobile ? "0.5rem" : "1rem",
               }}
             >
-              <Typography color="rgba(255,255,255,0.5)" variant="h5">
+              <Typography
+                color="rgba(255,255,255,0.5)"
+                variant={isMobile ? "h6" : "h5"}
+              >
                 Create new poll
               </Typography>
               <MuiButton
@@ -93,11 +123,11 @@ function Header() {
                 sx={{
                   background: "linear-gradient(135deg, #FF3D00, #D50000)", // Red gradient
                   color: "white",
-                  fontSize: "16px",
+                  fontSize: isMobile ? "14px" : "16px",
                   fontWeight: "bold",
                   textTransform: "none",
                   borderRadius: "6px", // Rectangular shape
-                  padding: "8px 16px",
+                  padding: isMobile ? "6px 12px" : "8px 16px",
                   boxShadow: "0px 8px 0px #A30000", // Darker red 3D shadow
                   transition: "all 0.3s ease-in-out",
                   "&:hover": {
@@ -121,7 +151,7 @@ function Header() {
                 "&::-webkit-scrollbar": {
                   display: "none", // Chrome, Safari
                 },
-                gap: "1rem",
+                gap: isMobile ? "0.5rem" : "1rem",
                 display: "flex",
                 flexDirection: "column",
               }}
@@ -133,6 +163,7 @@ function Header() {
                     onClick={() => {
                       navigate(`/${obj._id}`, { replace: true });
                       setOpenList(false);
+                      setValue("one");
                     }}
                     sx={{
                       display: "flex",
@@ -156,7 +187,7 @@ function Header() {
                       <Typography
                         color="white"
                         sx={{
-                          fontSize: "20px",
+                          fontSize: isMobile ? "16px" : "20px",
                           fontWeight: "bold",
                           letterSpacing: "1px",
                           wordWrap: "break-word", // Ensures long words wrap
@@ -177,7 +208,7 @@ function Header() {
                     >
                       <Typography
                         sx={{
-                          fontSize: "12px",
+                          fontSize: isMobile ? "10px" : "12px",
                           color: "rgba(255,255,255,0.6)",
                         }}
                       >
@@ -197,3 +228,8 @@ function Header() {
 }
 
 export default Header;
+
+Header.propTypes = {
+  value: propTypes.string,
+  setValue: propTypes.func,
+};

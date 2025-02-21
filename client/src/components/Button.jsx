@@ -1,7 +1,8 @@
-import { Button as MuiButton } from "@mui/material";
+import { Button as MuiButton, useMediaQuery } from "@mui/material";
 import propTypes from "prop-types";
 
 const Button = ({ children, onClick, color, loading }) => {
+  const isMobile = useMediaQuery("(max-width:800px)");
   return (
     <>
       {color === "orange" && (
@@ -10,11 +11,11 @@ const Button = ({ children, onClick, color, loading }) => {
           sx={{
             background: "linear-gradient(135deg, #FF8C42, #FF6B00)",
             color: "white",
-            fontSize: "18px",
+            fontSize: isMobile ? "16px" : "18px",
             fontWeight: "bold",
             textTransform: "none",
             borderRadius: "8px", // Rectangular shape
-            padding: "14px 28px",
+            padding: isMobile ? "10px 14px" : "14px 28px",
             boxShadow: "0px 8px 0px #C74A00", // 3D shadow only at the bottom
             transition: "all 0.3s ease-in-out",
             "&:hover": {
@@ -33,11 +34,11 @@ const Button = ({ children, onClick, color, loading }) => {
           sx={{
             background: "linear-gradient(135deg, #9C27B0, #6A1B9A)", // Purple gradient
             color: "white",
-            fontSize: "18px",
+            fontSize: isMobile ? "16px" : "18px",
             fontWeight: "bold",
             textTransform: "none",
             borderRadius: "8px", // Rectangular shape
-            padding: "14px 28px",
+            padding: isMobile ? "10px 14px" : "14px 28px",
             boxShadow: "0px 8px 0px #4A0072", // 3D shadow only at the bottom
             transition: "all 0.3s ease-in-out",
             "&:hover": {
@@ -57,11 +58,11 @@ const Button = ({ children, onClick, color, loading }) => {
           sx={{
             background: "linear-gradient(135deg, #FFFFFF, #E0E0E0)", // White gradient
             color: "#333", // Dark text for contrast
-            fontSize: "18px",
+            fontSize: isMobile ? "16px" : "18px",
             fontWeight: "bold",
             textTransform: "none",
             borderRadius: "8px", // Rectangular shape
-            padding: "14px 28px",
+            padding: isMobile ? "10px 14px" : "14px 28px",
             boxShadow: "0px 8px 0px #B0B0B0", // Light gray 3D shadow
             transition: "all 0.3s ease-in-out",
             "&:hover": {
@@ -81,11 +82,11 @@ const Button = ({ children, onClick, color, loading }) => {
           sx={{
             background: "linear-gradient(135deg, #FF3D00, #D50000)", // Red gradient
             color: "white",
-            fontSize: "18px",
+            fontSize: isMobile ? "16px" : "18px",
             fontWeight: "bold",
             textTransform: "none",
             borderRadius: "8px", // Rectangular shape
-            padding: "14px 28px",
+            padding: isMobile ? "10px 14px" : "14px 28px",
             boxShadow: "0px 8px 0px #A30000", // Darker red 3D shadow
             transition: "all 0.3s ease-in-out",
             "&:hover": {
@@ -107,11 +108,11 @@ const Button = ({ children, onClick, color, loading }) => {
           sx={{
             background: "linear-gradient(135deg, #00C853, #00E676)", // Green gradient
             color: "white",
-            fontSize: "18px",
+            fontSize: isMobile ? "16px" : "18px",
             fontWeight: "bold",
             textTransform: "none",
             borderRadius: "8px", // Rectangular shape
-            padding: "14px 28px",
+            padding: isMobile ? "10px 14px" : "14px 28px",
             boxShadow: "0px 8px 0px #00A152", // Darker green 3D shadow
             transition: "all 0.3s ease-in-out",
             "&:hover": {
