@@ -56,7 +56,7 @@ import { useSelector } from "react-redux";
 
 const VotersListContainer = styled.div`
   width: 100%;
-  height: 550px;
+  height: 500px;
   background-color: rgba(0, 0, 0, 0.4);
   border-radius: 16px;
 
