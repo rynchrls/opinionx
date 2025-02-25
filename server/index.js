@@ -14,13 +14,13 @@ app.use(express.json());
 /**
  * for cors policy
  */
-const corsOpton = {
-  origin: process.env.CLIENT_PORT || "http://localhost:3000",
-  method: ["GET", "PUT", "POST", "DELETE"],
+const corsOption = {
+  origin: ["process.env.CLIENT_PORT", "process.env.CNAME"],
+  methods: ["GET", "PUT", "POST", "DELETE"],
   credentials: true,
 };
 
-app.use(cors(corsOpton));
+app.use(cors(corsOption));
 
 /**
  * routes
