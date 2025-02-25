@@ -15,7 +15,7 @@ app.use(express.json());
  * for cors policy
  */
 const corsOption = {
-  origin: ["process.env.CLIENT_PORT", "process.env.CNAME"],
+  origin: [process.env.CLIENT_PORT, process.env.CNAME],
   methods: ["GET", "PUT", "POST", "DELETE"],
   credentials: true,
 };

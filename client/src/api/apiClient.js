@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "https://095122.xyz/api";
+const baseURL = `${window.location.href}/api`;
 
 const apiClient = axios.create({
   baseURL,
