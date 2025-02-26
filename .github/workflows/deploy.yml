@@ -22,7 +22,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh ubuntu@${{ secrets.INSTANCE }} << 'EOF'
+          ssh ubuntu@3.83.96.63 << 'EOF'
             cd ~/opinionx  # Change to your project directory
             git pull origin main  # Pull latest changes
             npm install  # Install dependencies
