@@ -1,0 +1,39 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches:
+      - main # Change to your deployment branch if different
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up SSH
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          ssh-keyscan -H 3.83.96.63 >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2
+        run: |
+          ssh ubuntu@3.83.96.63 << 'EOF'
+            cd ~/opinionx  # Change to your project directory
+            git pull origin main  # Pull latest changes
+            npm install  # Install dependencies
+            cd ~/opinionx/client  # Change to frontend directory
+            npm run build  # Build frontend
+            sudo cp -r dist/* /var/www/vhosts/frontend/dist/  # Copy frontend files to Nginx directory
+            sudo chown -R www-data:www-data /var/www/vhosts/frontend  # Change ownership to Nginx user
+            sudo systemctl restart nginx  # Restart Nginx
+            cd ~/opinionx/server  # Change to backend directory
+            npm install  # Install backend dependencies
+            pm2 restart all  # Restart PM2 processes
+          EOF
+
+      - name: cleanup
+        run: rm -rf ~/.ssh
