@@ -58,7 +58,7 @@ function Homepage() {
       sx={{
         width: "100%",
         height: "100vh",
-        backgroundColor: "#0D1B2A", // Dark Blue Background
+        backgroundColor: "green", // Dark Blue Background
         backgroundImage: `
           linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
           linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px)
