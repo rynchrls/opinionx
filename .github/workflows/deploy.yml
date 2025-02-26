@@ -36,5 +36,8 @@ jobs:
             pm2 restart all  # Restart PM2 processes
           EOF
 
+      - name: Restart Nginx
+        run: ssh ubuntu@${{ secrets.HOST }} "sudo systemctl daemon-reload && sudo systemctl restart nginx"
+
       - name: cleanup
         run: rm -rf ~/.ssh
