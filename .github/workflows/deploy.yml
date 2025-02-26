@@ -24,7 +24,10 @@ jobs:
         run: |
           ssh ubuntu@${{ secrets.HOST }} << 'EOF'
             cd ~/opinionx  # Change to your project directory
-            git pull origin main  # Pull latest changes
+            git fetch --all
+            git reset --hard origin/main  # Discards local changes and resets to remote state
+            git clean -fd  # Removes untracked files (like package-lock.json)
+            git pull origin main
             cd ~/opinionx/client  # Change to frontend directory
             npm install  # Install frontend dependencies
             npm run build  # Build frontend
