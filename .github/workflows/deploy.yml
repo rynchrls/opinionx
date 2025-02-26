@@ -25,8 +25,8 @@ jobs:
           ssh ubuntu@${{ secrets.HOST }} << 'EOF'
             cd ~/opinionx  # Change to your project directory
             git pull origin main  # Pull latest changes
-            npm install  # Install dependencies
             cd ~/opinionx/client  # Change to frontend directory
+            npm install  # Install dependencies
             npm run build  # Build frontend
             sudo cp -r dist/* /var/www/vhosts/frontend/dist/  # Copy frontend files to Nginx directory
             sudo chown -R www-data:www-data /var/www/vhosts/frontend  # Change ownership to Nginx user
