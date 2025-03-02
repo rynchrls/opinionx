@@ -41,15 +41,16 @@ jobs:
             cd ~/opinionx/server  # Change to backend directory
             npm install  # Install backend dependencies
             
-            # Check if PM2 process is running, if not, start it
+            # Check if PM2 process exists, if not, start it
             if pm2 list | grep -q "opinionx-backend"; then
               pm2 restart opinionx-backend  # Restart if already running
             else
               pm2 start npm --name "opinionx-backend" -- run start  # Start if not running
             fi
-            
-            pm2 save  # Save process list for auto-restart
-            pm2 startup  # Ensure PM2 starts on system boot
+
+            # Ensure PM2 is properly set up
+            pm2 save --force  # Force save process list
+            sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu  # Ensure startup script is set
           EOF
 
       - name: Restart Nginx
