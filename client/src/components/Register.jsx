@@ -39,7 +39,7 @@ const Register = React.memo(() => {
         setOpenSnackBar={setOpenSnackBar}
         severity={severity}
       >
-        Please add your name to proceed.
+        Please add your name to continue.
       </SnackbarComponent>
     </React.Fragment>
   );
