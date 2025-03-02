@@ -28,29 +28,15 @@ jobs:
             git reset --hard origin/main  # Discards local changes and resets to remote state
             git clean -fd  # Removes untracked files (like package-lock.json)
             git pull origin main
-            
-            # Frontend Deployment
             cd ~/opinionx/client  # Change to frontend directory
             npm install  # Install frontend dependencies
             npm run build  # Build frontend
             sudo cp -r dist/* /var/www/vhosts/frontend/dist/  # Copy frontend files to Nginx directory
             sudo chown -R www-data:www-data /var/www/vhosts/frontend  # Change ownership to Nginx user
             sudo systemctl restart nginx  # Restart Nginx
-            
-            # Backend Deployment
             cd ~/opinionx/server  # Change to backend directory
             npm install  # Install backend dependencies
-            
-            # Check if PM2 process exists, if not, start it
-            if pm2 list | grep -q "opinionx-backend"; then
-              pm2 restart opinionx-backend  # Restart if already running
-            else
-              pm2 start npm --name "opinionx-backend" -- run start  # Start if not running
-            fi
-
-            # Ensure PM2 is properly set up
-            pm2 save --force  # Force save process list
-            sudo env PATH=$PATH:/usr/bin pm2 startup systemd -u ubuntu --hp /home/ubuntu  # Ensure startup script is set
+            pm2 restart all  # Restart PM2 processes
           EOF
 
       - name: Restart Nginx
